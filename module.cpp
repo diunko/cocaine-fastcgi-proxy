@@ -148,6 +148,7 @@ namespace msgpack {
 		request.cookieNames(cookie_names);
 
 		it = cookie_names.begin();
+
 		for (; it != cookie_names.end(); ++it) {
 			packer.pack(*it);
 			packer.pack(request.getCookie(*it));
@@ -156,8 +157,14 @@ namespace msgpack {
 		// Query arguments
 		// ---------------
 
-		packer.pack(std::string("request"));
+		std::string body;
 
+		request.requestBody().toString(body);
+
+		packer.pack(std::string("request"));
+		packer.pack(body);
+
+		/*
 		request.remoteFiles(file_names);
 
 		packer.pack_map(request.countArgs() + file_names.size());
@@ -200,6 +207,7 @@ namespace msgpack {
 			packer.pack(std::string("contents"));
 			packer.pack(contents);
 		}
+		*/
 
 		return packer;
 	}
