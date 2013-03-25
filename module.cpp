@@ -322,7 +322,7 @@ fastcgi_module_t::handleRequest(fastcgi::Request* request,
 	message_path_t path(make_path(name));
 
 	try {
-		message_policy_t policy = m_dealer->policy_for_service(path.service_alias);
+		message_policy_t policy = m_dealer->policy_for_service(std::string("default"));
 		update_policy_from_config(policy);
 		update_policy_from_headers(policy, *request);
 
@@ -449,27 +449,7 @@ fastcgi_module_t::make_path(const std::string& script_name) const {
 		boost::char_separator<char>
 	> tokenizer_type;
 
-	boost::char_separator<char> separator("/");
-	tokenizer_type tokenizer(script_name, separator);
-	
-	std::vector<std::string> tokens;
-
-	std::copy(
-		tokenizer.begin(),
-		tokenizer.end(),
-		std::back_inserter(tokens)
-	);
-
-	if (tokens.size() != 2) {
-		log()->error(
-			"invalid message path, got %d path components",
-			tokens.size()
-		);
-
-		throw fastcgi::HttpException(400);
-	}
-
-	return message_path_t(tokens[0], tokens[1]);
+	return message_path_t(script_name, std::string("main"));
 }
 
 void
